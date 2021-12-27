@@ -185,7 +185,7 @@ def listFileOfEnd(path):
     return list
 
 # Wyświetl wszystkie pliki na serwerze zdalnym
-def listFileRemoteServer(command):
+def listFileRemoteServer(remote_path):
     import tmask_ssh
 
     r = tmask_ssh
@@ -195,7 +195,7 @@ def listFileRemoteServer(command):
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(hostname=r.hostname, username=r.username,
                 password=r.password, port=r.port)
-    stdin, stdout, stderr = ssh.exec_command(command)
+    stdin, stdout, stderr = ssh.exec_command(f'ls -1 {tmask_ssh.ssh_path}')
     for i in stdout.readlines():
         if len(i) != 0:
             remote_list.append(i)
@@ -239,7 +239,7 @@ def getFilesWithServer(remote_files, local_files):
     
     list = []
     
-    for r in listFileRemoteServer(tmask_ssh.list_remote_files):
+    for r in listFileRemoteServer(tmask_ssh.ssh_path):
         if r != '\n':
             if len(r) != 0:
                 r = r.replace('\n', '')
@@ -250,15 +250,17 @@ def getFilesWithServer(remote_files, local_files):
 
     sftp_client.close()
     ssh.close()
+    
+    listDstRecuresiveMd5(local_files)
 
 
 
 # Funkcja główna
 def main():
-    # copySrcToDstZipPass(src, dst, zip_pass)
+    copySrcToDstZipPass(src, dst, zip_pass)
     # sendBkpToRemoteServer()
     # listFileOfEnd(tmask_path.dst)
-    # sendBkpToRemoteServer(listFileOfEnd(tmask_path.dst))
+    sendBkpToRemoteServer(listFileOfEnd(tmask_path.dst))
     # listFileRemoteServer(tmask_ssh.list_remote_files)
     getFilesWithServer(tmask_ssh.ssh_path, tmask_path.src)
     
