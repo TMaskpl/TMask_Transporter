@@ -201,6 +201,29 @@ def listFileRemoteServer(remote_path):
             remote_list.append(i)
     return remote_list
 
+# Wyświetl Md5 plików na zdalnym serwerze
+def showMd5FilesRemoteServer(remote_path):
+
+    global r_d_dst
+    r_d_dst = {}
+    
+    now = time.strftime("%Y-%m-%d_%H-%M")
+    r = tmask_ssh
+
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(hostname=r.hostname, username=r.username,
+                password=r.password, port=r.port)
+    stdin, stdout, stderr = ssh.exec_command(f'for v in $(find {remote_path});do md5sum $v;done')
+    for m in stdout.readlines():
+        m = m.split('  ')
+        md5 = m[0]
+        file = m[1].replace('\n','')
+        r_d_dst[file] = md5
+        
+    with open('RemoteFilesMD5.json', 'w') as convert_file:
+        convert_file.write(json.dumps(r_d_dst))
+
 # Wyślij po ssh wszystkie wskazane pliki
 def sendBkpToRemoteServer(src_list_files):
     import tmask_ssh
@@ -257,12 +280,14 @@ def getFilesWithServer(remote_files, local_files):
 
 # Funkcja główna
 def main():
-    copySrcToDstZipPass(src, dst, zip_pass)
+    # copySrcToDstZipPass(src, dst, zip_pass)
     # sendBkpToRemoteServer()
     # listFileOfEnd(tmask_path.dst)
-    sendBkpToRemoteServer(listFileOfEnd(tmask_path.dst))
+    # sendBkpToRemoteServer(listFileOfEnd(tmask_path.dst))
     # listFileRemoteServer(tmask_ssh.list_remote_files)
-    getFilesWithServer(tmask_ssh.ssh_path, tmask_path.src)
+    # getFilesWithServer(tmask_ssh.ssh_path, tmask_path.src)
+    showMd5FilesRemoteServer(tmask_ssh.ssh_path)
+    
     
 if __name__ == "__main__":
     main()
