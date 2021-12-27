@@ -123,6 +123,21 @@ def sendEmail(dict_md5, file_stat):
     s.login(tmask_email.login, tmask_email.password)
     s.send_message(msg)
 
+# Wysyłanie maila z załącznikiem tekstowym MD5
+def sendEmailMD5(dict_md5):
+    now = time.strftime("%Y-%m-%d_%H-%M")
+
+    msg = EmailMessage()
+    msg["From"] = tmask_email.sender
+    msg["Subject"] = tmask_email.temat
+    msg["To"] = tmask_email.received
+    msg.set_content(tmask_email.body)
+    msg.add_attachment(open(dict_md5, "r").read(), filename=dict_md5)
+
+    s = smtplib.SMTP(tmask_email.smtp_server, tmask_email.port)
+    s.login(tmask_email.login, tmask_email.password)
+    s.send_message(msg)
+    
 # Sprawdzenie wsystkich md5 plików w tylko w folderze dst
 def listDstRecuresiveMd5(dst):
     
@@ -223,6 +238,8 @@ def showMd5FilesRemoteServer(remote_path):
         
     with open('RemoteFilesMD5.json', 'w') as convert_file:
         convert_file.write(json.dumps(r_d_dst))
+        
+    sendEmailMD5('RemoteFilesMD5.json')
 
 # Wyślij po ssh wszystkie wskazane pliki
 def sendBkpToRemoteServer(src_list_files):
