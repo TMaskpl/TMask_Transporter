@@ -67,18 +67,11 @@ def searchAllFilesRgex(full_path, pattern):
     list = [] 
     
     if platform.system() == "Windows":
-        pd_names = string.ascii_uppercase
-        vd_names = []
-        for each_drive in pd_names:
-            if os.path.exists(each_drive+":\\"):
-                #print(each_drive)
-                vd_names.append(each_drive+":\\")
-        print(vd_names)
-        for each_drive in vd_names:
-            for r, d, f in os.walk(each_drive):
-                for each_f in f:
-                    if each_f == req_file:
-                        print(os.path.join(r, each_f))
+        for r, d, f in os.walk(full_path):
+            for each_f in f:
+                result = re.match(pattern, each_f)
+                if result:
+                    list.append(os.path.join(r, each_f))
     else:
         for r, d, f in os.walk(full_path):
             for each_file in f:
