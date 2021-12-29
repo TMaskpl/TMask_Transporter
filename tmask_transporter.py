@@ -1,10 +1,5 @@
 #!/usr/bin/python
 
-__author__ = "biuro@tmask.pl"
-__copyright__ = "Copyright (C) 2021 TMask.pl"
-__license__ = "MIT License"
-__version__ = "1.0"
-
 import tmask_email
 import tmask_path
 import tmask_ssh
@@ -175,6 +170,18 @@ def copySrcToDst(src, dst):
     shutil.copytree(src, dst_path)
     
     listDstRecuresiveMd5(dst)
+    
+# Copy file to dst
+def copySrcFileToDst(src, dst):
+    if platform.system() == "Windows":
+        filename_bkp = src.split('\\')[-1]
+    else:
+        filename_bkp = src.split('/')[-1]
+
+    dst_path = os.path.join(dst, filename_bkp)
+    shutil.copy(src, dst_path)
+
+    listDstRecuresiveMd5(dst)
 
 # Copy all Src to DST - ZIP
 def copySrcToDstZip(src, dst):
@@ -308,8 +315,9 @@ def main():
     # sendBkpToRemoteServer(listFileOfEnd(tmask_path.dst))
     # listFileRemoteServer(tmask_ssh.list_remote_files)
     # getFilesWithServer(tmask_ssh.ssh_path, tmask_path.src)
-    showMd5FilesRemoteServer(tmask_ssh.ssh_path)
-    
+    # showMd5FilesRemoteServer(tmask_ssh.ssh_path)
+    copySrcFileToDst(
+        '/home/iso/ubuntu-21.10-live-server-amd64.iso', '/home/Pobrane')
     
 if __name__ == "__main__":
     main()
