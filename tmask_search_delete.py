@@ -1,5 +1,11 @@
 #!/usr/bin/python
 
+__author__ = "biuro@tmask.pl"
+__copyright__ = "Copyright (C) 2021 TMask.pl"
+__license__ = "MIT License"
+__version__ = "1.0"
+
+
 import os
 import sys
 import string
@@ -55,6 +61,33 @@ def searchAllFiles(path):
             list.append(fname)
     return list
 
+# Znajdz listę plików pasujących do regex pattern
+def searchAllFilesRgex(full_path, pattern):
+    req_file = full_path
+    list = [] 
+    
+    if platform.system() == "Windows":
+        pd_names = string.ascii_uppercase
+        vd_names = []
+        for each_drive in pd_names:
+            if os.path.exists(each_drive+":\\"):
+                #print(each_drive)
+                vd_names.append(each_drive+":\\")
+        print(vd_names)
+        for each_drive in vd_names:
+            for r, d, f in os.walk(each_drive):
+                for each_f in f:
+                    if each_f == req_file:
+                        print(os.path.join(r, each_f))
+    else:
+        for r, d, f in os.walk(full_path):
+            for each_file in f:
+                # print(each_file)
+                result = re.match(pattern, each_file)
+                if result:
+                    list.append(os.path.join(r, each_file))
+    return list
+
 # Usuń pliki starsze niz np days=2
 def delFilesOlder(list_files, days):
     today = datetime.datetime.now()
@@ -68,7 +101,6 @@ def delFilesOlder(list_files, days):
             print(
                 f'Delete --> {each_file} - {file_cre_date}   -->  {dif_days} days old')
             os.remove(each_file)
-
 
 # Usuń pliki
 def delFiles(list_files):
@@ -86,10 +118,11 @@ def main():
     # searchFilesLinuxWindows()
     # print(searchAllFiles('/home/Pobrane'))
     # print(searchAllFilesExt('/home/Pobrane', 'tar'))
-    list_del_files = searchAllFilesExt('/home/Pobrane', 'pdf')
+    # list_del_files = searchAllFilesExt('/home/Pobrane', 'pdf')
     # print(list)
     # delFilesOlder(list_del_files, 0)
-    delFiles(list_del_files)
+    # delFiles(list_del_files)
+    print(searchAllFilesRgex('/home/dniemczok/Pobrane', '.*KRIS.*'))
     
 if __name__ == "__main__":
     main()
