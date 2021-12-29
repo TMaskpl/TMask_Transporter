@@ -1,5 +1,10 @@
 #!/usr/bin/python
 
+__author__ = "biuro@tmask.pl"
+__copyright__ = "Copyright (C) 2021 TMask.pl"
+__license__ = "MIT License"
+__version__ = "1.0"
+
 import tmask_email
 import tmask_path
 import tmask_ssh
